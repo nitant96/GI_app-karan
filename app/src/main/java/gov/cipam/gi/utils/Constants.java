@@ -16,4 +16,10 @@ public class Constants {
     public static final String KEY_USER_DATA ="userdata" ;
     public static final String INDEX = "index";
     public static final String ROOT_NODE ="root";
+
+    public static final String CATEGORY = "Category";
+    public static final String STATE = "State";
+    public static final String CLICKED_LIST_TYPE="clickedListType";
+    public static final String THE_ITEM_CLICKED="theItemClicked";
+
 }

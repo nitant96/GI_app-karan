@@ -5,34 +5,41 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import gov.cipam.gi.R;
-import gov.cipam.gi.adapters.ProductFirebaseAdapter;
-import gov.cipam.gi.model.Product;
-import gov.cipam.gi.utils.RecyclerViewClickListener;
-import gov.cipam.gi.utils.RecyclerViewTouchListener;
-import gov.cipam.gi.viewholder.ProductViewHolder;
 
-public class ProductListActivity extends BaseActivity implements RecyclerViewClickListener {
+import java.util.ArrayList;
+
+import gov.cipam.gi.R;
+import gov.cipam.gi.adapters.ProductListAdapter;
+import gov.cipam.gi.model.Product;
+import gov.cipam.gi.utils.Constants;
+
+public class ProductListActivity extends BaseActivity implements ProductListAdapter.setOnProductClickedListener {
     RecyclerView productListRecycler;
-    DatabaseReference mDatabaseProduct;
-    ProductFirebaseAdapter productFirebaseAdapter;
+    ArrayList<Product> myProductList=new ArrayList<>();
+    ProductListAdapter productListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
         setUpToolbar(this);
-        mDatabaseProduct = FirebaseDatabase.getInstance().getReference("Giproducts");
+
+        Intent intent=getIntent();
+        String clickedListType=intent.getStringExtra(Constants.CLICKED_LIST_TYPE);
+        String theItemClicked=intent.getStringExtra(Constants.THE_ITEM_CLICKED);
+        if(clickedListType.equals(Constants.STATE)){
+            myProductList=HomePageActivity.stateMapping.get(theItemClicked);
+        }
+        else{
+            myProductList=HomePageActivity.categoryMapping.get(theItemClicked);
+        }
         productListRecycler=findViewById(R.id.product_list_recycler_view);
-        productFirebaseAdapter=new ProductFirebaseAdapter(this,Product.class,R.layout.card_view_product_list,ProductViewHolder.class,mDatabaseProduct);
-
-        productListRecycler.setAdapter(productFirebaseAdapter);
+        productListAdapter=new ProductListAdapter(myProductList,this,this);
         productListRecycler.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-        productListRecycler.addOnItemTouchListener(new RecyclerViewTouchListener(this,productListRecycler,this));
-
+        productListRecycler.setAdapter(productListAdapter);
     }
 
     @Override
@@ -41,13 +48,8 @@ public class ProductListActivity extends BaseActivity implements RecyclerViewCli
     }
 
     @Override
-    public void onClick(View view, int position) {
-        Intent intent=new Intent(this,ProductDetailActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onLongClick(View view, int position) {
-
+    public void onProductClicked(View view, int position) {
+        Toast.makeText(this,myProductList.get(position).getName()+" Clicked !!", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this,ProductDetailActivity.class));
     }
 }

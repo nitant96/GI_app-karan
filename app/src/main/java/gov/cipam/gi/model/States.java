@@ -1,11 +1,14 @@
 package gov.cipam.gi.model;
 
+import java.util.ArrayList;
+
 /**
  * Created by Deepak on 11/18/2017.
  */
 
 public class States  {
     private String name,dpurl;
+    ArrayList<Product> stateProductList=new ArrayList<>();
 
     public States(){
 
@@ -30,5 +33,13 @@ public class States  {
 
     public void setDpurl(String dpurl) {
         this.dpurl = dpurl;
+    }
+
+    public ArrayList<Product> getStateProductList() {
+        return stateProductList;
+    }
+
+    public void setStateProductList(ArrayList<Product> stateProductList) {
+        this.stateProductList = stateProductList;
     }
 }

@@ -63,7 +63,7 @@
     <string name="toast_signup_failure">Sign up failed.</string>
     <string name="toast_verification_email_sent">Sign up failed.</string>
     <string name="toast_signin_failure">Authentication failed.</string>
-    <string name="toast_signin_success">Success</string>
+    <string name="toast_signin_success">Successfully Logged In</string>
     <string name="toast_signin_again_request">Please Sign in again</string>
     <string name="toast_password_change_success">Password Successfully Changed</string>
     <string name="toast_empty_email">\"Enter Email\"</string>

@@ -46,7 +46,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
-        launchActivity();
+//        launchActivity();
         mAuth = FirebaseAuth.getInstance();
         mPrefs = getPreferences(MODE_PRIVATE);
 
@@ -86,17 +86,17 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    public void launchActivity() {
-        SharedPreferences preferences =
-                getSharedPreferences(Constants.MY_PREFERENCES, MODE_PRIVATE);
-
-        if (!preferences.getBoolean(Constants.ONBOARDING_COMPLETE, false)) {
-
-            startActivity(new Intent(this, IntroActivity.class));
-
-            finish();
-        }
-    }
+//    public void launchActivity() {
+//        SharedPreferences preferences =
+//                getSharedPreferences(Constants.MY_PREFERENCES, MODE_PRIVATE);
+//
+//        if (!preferences.getBoolean(Constants.ONBOARDING_COMPLETE, false)) {
+//
+//            startActivity(new Intent(this, IntroActivity.class));
+//
+//            finish();
+//        }
+//    }
 
 
     @Override
