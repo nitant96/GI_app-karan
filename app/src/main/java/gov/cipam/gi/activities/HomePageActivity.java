@@ -1,6 +1,7 @@
 package gov.cipam.gi.activities;
 
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
@@ -57,6 +59,13 @@ public class HomePageActivity extends BaseActivity
     HomePage homePage;
     SearchView searchView;
     Tab2 tab2;
+
+    MenuItem homePageMenuButton,navigationMenuButton;
+    static final boolean homePageFragment=true;
+    static final boolean navigationFragment=false;
+
+    boolean isFirstTimeLoad=true;
+    boolean currentFragment;
     boolean download1=false,download2=false,download3=false;
 
     public static ArrayList<Categories> mCategoryList=new ArrayList<>();
@@ -79,6 +88,8 @@ public class HomePageActivity extends BaseActivity
         mAuth = FirebaseAuth.getInstance();
         homePage =new HomePage();
         tab2=new Tab2();
+
+        currentFragment=homePageFragment;
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -87,6 +98,10 @@ public class HomePageActivity extends BaseActivity
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(0);
+        homePageMenuButton=navigation.getMenu().getItem(0);
+        homePageMenuButton.setEnabled(false);
+        navigationMenuButton=navigation.getMenu().getItem(1);
+
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -198,19 +213,28 @@ public class HomePageActivity extends BaseActivity
         nav_email=hView.findViewById(R.id.nav_header_email);
         user = SharedPref.getSavedObjectFromPreference(HomePageActivity.this, Constants.KEY_USER_INFO,Constants.KEY_USER_DATA,Users.class);
         setUserName();
+
     }
 
 
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer =findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        else {
-            super.onBackPressed();
-            finish();
+        int stackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
+
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                if(stackEntryCount==2) {
+                    homePageMenuButton.setEnabled(false);
+                    navigationMenuButton.setEnabled(true);
+                    getSupportFragmentManager().popBackStackImmediate("homePage",0);
+                }
+                else {
+                    super.onBackPressed();
+                    finish();
+                }
         }
     }
 
@@ -218,15 +242,43 @@ public class HomePageActivity extends BaseActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_home_page, menu);
+        setSearchBar(menu);
+        return true;
+    }
+
+    void setSearchBar(Menu menu){
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView =
                 (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.isSubmitButtonEnabled();
         searchView.animate();
+
+//        ComponentName componentName=new ComponentName(this,AppSearchActivity.class);
+
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
-        return true;
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(HomePageActivity.this, "Inside listener !!" , Toast.LENGTH_SHORT).show();
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                startActivity(new Intent(getApplicationContext(),AppSearchActivity.class));
+                Toast.makeText(HomePageActivity.this, "Submit clicked !!", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Toast.makeText(HomePageActivity.this,newText, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -266,12 +318,19 @@ public class HomePageActivity extends BaseActivity
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.navigation_home:
+                case R.id.navigation_home: {
+                    homePageMenuButton.setEnabled(false);
+                    navigationMenuButton.setEnabled(true);
                     fragmentInflate(homePage);
                     return true;
-                case R.id.navigation_dashboard:
+                }
+
+                case R.id.navigation_dashboard: {
+                    navigationMenuButton.setEnabled(false);
+                    homePageMenuButton.setEnabled(true);
                     fragmentInflate(tab2);
                     return true;
+                }
             }
             return false;
         }
@@ -342,8 +401,19 @@ public class HomePageActivity extends BaseActivity
 
     public void fragmentInflate(Fragment fragment){
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.home_page_frame_layout, fragment);
-        fragmentTransaction.commit();
+        if(fragment==homePage) {
+            if (isFirstTimeLoad) {
+                isFirstTimeLoad = false;
+                fragmentTransaction.replace(R.id.home_page_frame_layout, fragment).addToBackStack("homePage").commitAllowingStateLoss();
+            }
+            else{
+                getSupportFragmentManager().popBackStackImmediate("navigation", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+        }
+        else{
+            fragmentTransaction.replace(R.id.home_page_frame_layout, fragment).addToBackStack("navigation").commitAllowingStateLoss();
+        }
+//        fragmentTransaction.commit();
     }
     @Override
     protected int getToolbarID() {

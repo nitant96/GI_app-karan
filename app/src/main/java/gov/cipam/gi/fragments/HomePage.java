@@ -49,17 +49,31 @@ public class HomePage extends Fragment implements CategoryAdapter.setOnCategoryC
     DatabaseReference mDatabaseState,mDatabaseCategory;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_homepage, container, false);
+    public void onAttach(Context context) {
+
+        Toast.makeText(getContext(), "onAttach Called", Toast.LENGTH_SHORT).show();
+        super.onAttach(context);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Toast.makeText(getContext(), "onCreate Called", Toast.LENGTH_SHORT).show();
+
         super.onCreate(savedInstanceState);
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Toast.makeText(getContext(), "onCreateView Called", Toast.LENGTH_SHORT).show();
+
+        return inflater.inflate(R.layout.fragment_homepage, container, false);
+    }
+
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        Toast.makeText(getContext(), "onViewCreated Called", Toast.LENGTH_SHORT).show();
+
         mAuth = FirebaseAuth.getInstance();
         rvState =  view.findViewById(R.id.recycler_states);
         rvCategory =  view.findViewById(R.id.recycler_categories);
@@ -95,23 +109,29 @@ public class HomePage extends Fragment implements CategoryAdapter.setOnCategoryC
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
+        Toast.makeText(getContext(), "onPause Called", Toast.LENGTH_SHORT).show();
+
         super.onPause();
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onResume(){
+        Toast.makeText(getContext(), "onResume Called", Toast.LENGTH_SHORT).show();
+        super.onResume();
     }
 
     @Override
     public void onDestroyView() {
+        Toast.makeText(getContext(), "onDestroyView Called", Toast.LENGTH_SHORT).show();
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        Toast.makeText(getContext(), "onDestroy Called", Toast.LENGTH_SHORT).show();
+        super.onDestroy();
     }
 
     @Override

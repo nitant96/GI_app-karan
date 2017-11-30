@@ -40,6 +40,7 @@ dependencies {
     compile 'com.github.apl-devs:appintro:v4.2.2'
     compile 'de.hdodenhof:circleimageview:2.2.0'
     compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.android.support:design:26.+'
     compile('cn.trinea.android.view.autoscrollviewpager:android-auto-scroll-view-pager:1.1.2') {
         exclude module: 'support-v4'
     }
